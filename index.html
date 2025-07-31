@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Secure Contact Terminal</title>
+  <style>
+    body {
+      background-color: #0a0a0a;
+      color: #00ffcc;
+      font-family: "Courier New", monospace;
+      text-align: center;
+      padding: 50px;
+    }
+    h1 {
+      font-size: 32px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    input, textarea, select, button {
+      width: 90%;
+      max-width: 500px;
+      margin: 10px auto;
+      padding: 12px;
+      font-size: 16px;
+      background-color: #1a1a1a;
+      color: #00ffcc;
+      border: 1px solid #00ffcc;
+      border-radius: 5px;
+      display: block;
+    }
+    button {
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #003f3f;
+    }
+    #status {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>🛡️ Secure Contact Terminal</h1>
+  
+  <input type="password" id="authCode" placeholder="Enter AUTH Code">
+  
+<select id="recipient">
+  <option value="">Select Recipient</option>
+  <option value="vaf">VAF</option>
+  <option value="scp">SCP Foundation</option>
+  <option value="gaming">GAMING UNIVERSE</option>
+  <option value="matesa">matesaman9910</option>
+  <option value="vojta">111Vojta</option>
+</select>
+
+  <select id="urgency">
+    <option value="normal">Urgency: Normal</option>
+    <option value="high">Urgency: High</option>
+    <option value="emergency">Urgency: Emergency</option>
+  </select>
+
+  <textarea id="message" rows="6" placeholder="Type your message here..."></textarea>
+  
+  <button onclick="sendMessage()">SEND SECURE MESSAGE</button>
+
+  <p id="status"></p>
+
+  <script>
+    async function sendMessage() {
+      const auth = document.getElementById('authCode').value.trim();
+      const to = document.getElementById('recipient').value;
+      const urgency = document.getElementById('urgency').value;
+      const msg = document.getElementById('message').value.trim();
+      const status = document.getElementById('status');
+
+      if (!auth || !to || !msg) {
+        status.style.color = 'red';
+        status.textContent = "❌ All fields are required.";
+        return;
+      }
+
+      const urgencyText = urgency.toUpperCase();
+
+const webhooks = {
+  vaf:    "https://discord.com/api/webhooks/WEBHOOK_VAF",
+  scp:    "https://discord.com/api/webhooks/WEBHOOK_SCP",
+  gaming: "https://discord.com/api/webhooks/WEBHOOK_GAMING",
+  matesa: "https://discord.com/api/webhooks/WEBHOOK_MATESAMAN9910",
+  vojta:  "https://discord.com/api/webhooks/WEBHOOK_111VOJTA"
+};
+
+      try {
+        await fetch(webhooks[to], {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: "Secure Terminal",
+            content: `🔐 **New Secure Message**\n\n**AUTH Code:** \`${auth}\`\n**Recipient:** ${to.toUpperCase()}\n**Urgency:** ${urgencyText}\n\n📩 **Message:**\n${msg}`
+          })
+        });
+        status.style.color = 'lime';
+        status.textContent = "✅ Message sent successfully.";
+      } catch (e) {
+        status.style.color = 'red';
+        status.textContent = "❌ Failed to send message. Check console.";
+        console.error(e);
+      }
+    }
+  </script>
+</body>
+</html>
