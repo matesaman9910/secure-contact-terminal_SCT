@@ -43,17 +43,17 @@
 </head>
 <body>
   <h1>🛡️ Secure Contact Terminal</h1>
+
+  <input type="text" id="authCode" placeholder="Enter 4-digit AUTH Code" maxlength="4" pattern="[0-9]{4}">
   
-  <input type="password" id="authCode" placeholder="Enter AUTH Code">
-  
-<select id="recipient">
-  <option value="">Select Recipient</option>
-  <option value="vaf">VAF</option>
-  <option value="scp">SCP Foundation</option>
-  <option value="gaming">GAMING UNIVERSE</option>
-  <option value="matesa">matesaman9910</option>
-  <option value="vojta">111Vojta</option>
-</select>
+  <select id="recipient">
+    <option value="">Select Recipient</option>
+    <option value="vaf">VAF</option>
+    <option value="scp">SCP Foundation</option>
+    <option value="gaming">GAMING UNIVERSE</option>
+    <option value="matesa">matesaman9910</option>
+    <option value="vojta">111Vojta</option>
+  </select>
 
   <select id="urgency">
     <option value="normal">Urgency: Normal</option>
@@ -68,6 +68,20 @@
   <p id="status"></p>
 
   <script>
+    const authUsers = {
+      "9910": "matesaman9910",
+      "1111": "111Vojta",
+      "0000": "Guest"
+    };
+
+    const recipients = {
+      vaf:    "https://discord.com/api/webhooks/WEBHOOK_VAF",
+      scp:    "https://discord.com/api/webhooks/WEBHOOK_SCP",
+      gaming: "https://discord.com/api/webhooks/WEBHOOK_GAMING",
+      matesa: "https://discord.com/api/webhooks/WEBHOOK_MATESAMAN9910",
+      vojta:  "https://discord.com/api/webhooks/WEBHOOK_111VOJTA"
+    };
+
     async function sendMessage() {
       const auth = document.getElementById('authCode').value.trim();
       const to = document.getElementById('recipient').value;
@@ -75,36 +89,47 @@
       const msg = document.getElementById('message').value.trim();
       const status = document.getElementById('status');
 
-      if (!auth || !to || !msg) {
+      if (!/^\d{4}$/.test(auth)) {
         status.style.color = 'red';
-        status.textContent = "❌ All fields are required.";
+        status.textContent = "❌ AUTH Code must be 4 digits.";
         return;
       }
 
+      if (!(auth in authUsers)) {
+        status.style.color = 'red';
+        status.textContent = "❌ Invalid AUTH Code.";
+        return;
+      }
+
+      if (!to || !(to in recipients)) {
+        status.style.color = 'red';
+        status.textContent = "❌ Invalid or missing recipient.";
+        return;
+      }
+
+      if (!msg) {
+        status.style.color = 'red';
+        status.textContent = "❌ Message cannot be empty.";
+        return;
+      }
+
+      const sender = authUsers[auth];
       const urgencyText = urgency.toUpperCase();
 
-const webhooks = {
-  vaf:    "https://discord.com/api/webhooks/WEBHOOK_VAF",
-  scp:    "https://discord.com/api/webhooks/WEBHOOK_SCP",
-  gaming: "https://discord.com/api/webhooks/WEBHOOK_GAMING",
-  matesa: "https://discord.com/api/webhooks/WEBHOOK_MATESAMAN9910",
-  vojta:  "https://discord.com/api/webhooks/WEBHOOK_111VOJTA"
-};
-
       try {
-        await fetch(webhooks[to], {
+        await fetch(recipients[to], {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             username: "Secure Terminal",
-            content: `🔐 **New Secure Message**\n\n**AUTH Code:** \`${auth}\`\n**Recipient:** ${to.toUpperCase()}\n**Urgency:** ${urgencyText}\n\n📩 **Message:**\n${msg}`
+            content: `🔐 **New Secure Message**\n\n👤 **From:** ${sender} \`[${auth}]\`\n🎯 **To:** ${to.toUpperCase()}\n🚨 **Urgency:** ${urgencyText}\n\n📩 **Message:**\n${msg}`
           })
         });
         status.style.color = 'lime';
         status.textContent = "✅ Message sent successfully.";
       } catch (e) {
         status.style.color = 'red';
-        status.textContent = "❌ Failed to send message. Check console.";
+        status.textContent = "❌ Failed to send message.";
         console.error(e);
       }
     }
