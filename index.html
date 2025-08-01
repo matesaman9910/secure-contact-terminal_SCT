@@ -2,67 +2,107 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Secure Contact Terminal</title>
+  <title>SECURE CONTACT TERMINAL</title>
   <style>
     body {
-      background-color: #0a0a0a;
-      color: #00ffcc;
-      font-family: "Courier New", monospace;
-      text-align: center;
-      padding: 50px;
+      background-color: #000;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      padding: 2em;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-shadow: 0 0 5px #00ff00;
     }
+
     h1 {
-      font-size: 32px;
-      margin-bottom: 20px;
+      font-size: 24px;
+      margin-bottom: 30px;
       text-transform: uppercase;
-      letter-spacing: 2px;
+      border-bottom: 1px solid #00ff00;
+      padding-bottom: 10px;
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
     }
+
     input, textarea, select, button {
-      width: 90%;
-      max-width: 500px;
-      margin: 10px auto;
-      padding: 12px;
+      width: 100%;
+      max-width: 600px;
+      background-color: #000;
+      color: #00ff00;
+      border: 1px solid #00ff00;
+      padding: 10px;
       font-size: 16px;
-      background-color: #1a1a1a;
-      color: #00ffcc;
-      border: 1px solid #00ffcc;
-      border-radius: 5px;
-      display: block;
+      margin-top: 10px;
+      outline: none;
+      text-shadow: 0 0 3px #00ff00;
+      box-shadow: 0 0 5px #00ff00;
     }
+
+    input::placeholder, textarea::placeholder {
+      color: #00ff00;
+      opacity: 0.6;
+    }
+
+    select {
+      text-transform: uppercase;
+    }
+
     button {
       cursor: pointer;
+      text-transform: uppercase;
+      font-weight: bold;
+      transition: 0.2s;
     }
+
     button:hover {
-      background-color: #003f3f;
+      background-color: #002200;
+      box-shadow: 0 0 10px #00ff00;
+      text-shadow: 0 0 10px #00ff00;
     }
+
     #status {
       margin-top: 20px;
       font-weight: bold;
+      font-size: 18px;
+    }
+
+    .blinking-cursor::after {
+      content: "_";
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
     }
   </style>
 </head>
 <body>
-  <h1>🛡️ Secure Contact Terminal</h1>
+  <h1 class="blinking-cursor">SECURE CONTACT TERMINAL</h1>
 
-  <input type="text" id="authCode" placeholder="Enter 4-digit AUTH Code" maxlength="4" pattern="[0-9]{4}">
-  
+  <input type="text" id="authCode" placeholder="ENTER AUTH CODE" maxlength="4" pattern="[0-9]{4}">
+
   <select id="recipient">
-    <option value="">Select Recipient</option>
+    <option value="">SELECT RECIPIENT</option>
     <option value="vaf">VAF</option>
-    <option value="scp">SCP Foundation</option>
+    <option value="scp">SCP FOUNDATION</option>
     <option value="gaming">GAMING UNIVERSE</option>
-    <option value="matesa">matesaman9910</option>
-    <option value="vojta">111Vojta</option>
+    <option value="matesa">MATESAMAN9910</option>
+    <option value="vojta">111VOJTA</option>
   </select>
 
   <select id="urgency">
-    <option value="normal">Urgency: Normal</option>
-    <option value="high">Urgency: High</option>
-    <option value="emergency">Urgency: Emergency</option>
+    <option value="normal">URGENCY: NORMAL</option>
+    <option value="high">URGENCY: HIGH</option>
+    <option value="emergency">URGENCY: EMERGENCY</option>
   </select>
 
-  <textarea id="message" rows="6" placeholder="Type your message here..."></textarea>
-  
+  <textarea id="message" rows="6" placeholder="TYPE YOUR MESSAGE HERE..."></textarea>
+
   <button onclick="sendMessage()">SEND SECURE MESSAGE</button>
 
   <p id="status"></p>
@@ -91,25 +131,25 @@
 
       if (!/^\d{4}$/.test(auth)) {
         status.style.color = 'red';
-        status.textContent = "❌ AUTH Code must be 4 digits.";
+        status.textContent = "❌ AUTH CODE MUST BE 4 DIGITS";
         return;
       }
 
       if (!(auth in authUsers)) {
         status.style.color = 'red';
-        status.textContent = "❌ Invalid AUTH Code.";
+        status.textContent = "❌ INVALID AUTH CODE";
         return;
       }
 
       if (!to || !(to in recipients)) {
         status.style.color = 'red';
-        status.textContent = "❌ Invalid or missing recipient.";
+        status.textContent = "❌ INVALID OR MISSING RECIPIENT";
         return;
       }
 
       if (!msg) {
         status.style.color = 'red';
-        status.textContent = "❌ Message cannot be empty.";
+        status.textContent = "❌ MESSAGE CANNOT BE EMPTY";
         return;
       }
 
@@ -126,10 +166,10 @@
           })
         });
         status.style.color = 'lime';
-        status.textContent = "✅ Message sent successfully.";
+        status.textContent = "✅ MESSAGE SENT SUCCESSFULLY";
       } catch (e) {
         status.style.color = 'red';
-        status.textContent = "❌ Failed to send message.";
+        status.textContent = "❌ FAILED TO SEND MESSAGE";
         console.error(e);
       }
     }
