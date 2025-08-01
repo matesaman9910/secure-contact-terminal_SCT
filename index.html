@@ -108,14 +108,12 @@
   <p id="status"></p>
 
   <script>
-    // Valid AUTH codes mapped to sender names
     const authUsers = {
       "9910": "matesaman9910",
       "1111": "111Vojta",
       "0000": "Guest"
     };
 
-    // Webhook destinations for recipients
     const recipients = {
       vaf: "https://discord.com/api/webhooks/1400523185689985107/J5JtDWJqquFBCz3lXIIleOrF3CgHMdZ-U0r6VPMbwnsfFPOd7Q3mXb48Zx-2j-D02FtK",
       scp: "https://discord.com/api/webhooks/1400874303351689298/Fm5Bces63ph8FVqo6R4PkWTjdDC2gQFDrYN4RmOHOFlYf3cTdP7RDAmmlMucbJWK3pq1",
@@ -124,7 +122,6 @@
       vojta: "https://discord.com/api/webhooks/1400874901799178272/Gtp3kN4DI28Kk-Kdo2Oxw2I4fy7j9VZHX9G17fKv_6BMH4bFsgb1l43xzbY_pKgj1OXQ"
     };
 
-    // Human-readable recipient names
     const recipientDisplayNames = {
       vaf: "VAF",
       scp: "SCP Foundation",
@@ -133,13 +130,18 @@
       vojta: "111Vojta"
     };
 
-    // Discord role mentions for each recipient
     const recipientMentions = {
       vaf: "<@&1400876490987409408>",
       scp: "<@&1400876625754853540>",
       gaming: "<@&1400876712597917716>",
       matesa: "<@&1400876815890780293>",
       vojta: "<@&1400876888678731826>"
+    };
+
+    const urgencyCooldowns = {
+      normal: 30,       // seconds
+      high: 120,
+      emergency: 300
     };
 
     async function sendMessage() {
@@ -149,7 +151,6 @@
       const msg = document.getElementById('message').value.trim();
       const status = document.getElementById('status');
 
-      // Validate fields
       if (!/^\d{4}$/.test(auth)) {
         status.style.color = 'red';
         status.textContent = "❌ AUTH CODE MUST BE 4 DIGITS";
@@ -174,6 +175,19 @@
         return;
       }
 
+      // Check rate limit
+      const now = Date.now();
+      const cooldownKey = `lastSent_${auth}_${to}_${urgency}`;
+      const lastSent = localStorage.getItem(cooldownKey);
+      const cooldown = urgencyCooldowns[urgency] * 1000;
+
+      if (lastSent && now - parseInt(lastSent) < cooldown) {
+        const waitSec = Math.ceil((cooldown - (now - parseInt(lastSent))) / 1000);
+        status.style.color = 'red';
+        status.textContent = `⏳ Please wait ${waitSec}s before sending another ${urgency.toUpperCase()} message to this recipient.`;
+        return;
+      }
+
       const sender = authUsers[auth];
       const urgencyText = urgency.toUpperCase();
       const displayName = recipientDisplayNames[to];
@@ -188,6 +202,8 @@
             content: `🔐 **New Secure Message**\n\n👤 **From:** ${sender} \`[${auth}]\`\n🎯 **To:** ${displayName} ${mention}\n🚨 **Urgency:** ${urgencyText}\n\n📩 **Message:**\n${msg}`
           })
         });
+
+        localStorage.setItem(cooldownKey, now.toString());
         status.style.color = 'lime';
         status.textContent = "✅ MESSAGE SENT SUCCESSFULLY";
       } catch (e) {
