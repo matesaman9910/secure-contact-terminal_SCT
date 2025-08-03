@@ -2,78 +2,39 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>SECURE CONTACT TERMINAL</title>
+  <title>PROJECT LOCKED DOWN</title>
   <style>
     body {
       background-color: #000;
-      color: #00ff00;
+      color: #ff3333;
       font-family: 'Courier New', monospace;
-      padding: 2em;
+      padding: 3em;
       margin: 0;
-      height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      text-shadow: 0 0 5px #00ff00;
+      height: 100vh;
+      text-shadow: 0 0 10px #ff0000;
     }
 
     h1 {
-      font-size: 24px;
-      margin-bottom: 30px;
+      font-size: 2em;
       text-transform: uppercase;
-      border-bottom: 1px solid #00ff00;
-      padding-bottom: 10px;
-      width: 100%;
+      border-bottom: 2px solid #ff3333;
+      padding-bottom: 0.5em;
+      margin-bottom: 1em;
+    }
+
+    p {
+      font-size: 1.2em;
       max-width: 600px;
       text-align: center;
+      line-height: 1.6;
     }
 
-    input, textarea, select, button {
-      width: 100%;
-      max-width: 600px;
-      background-color: #000;
-      color: #00ff00;
-      border: 1px solid #00ff00;
-      padding: 10px;
-      font-size: 16px;
-      margin-top: 10px;
-      outline: none;
-      text-shadow: 0 0 3px #00ff00;
-      box-shadow: 0 0 5px #00ff00;
-    }
-
-    input::placeholder, textarea::placeholder {
-      color: #00ff00;
-      opacity: 0.6;
-    }
-
-    select {
-      text-transform: uppercase;
-    }
-
-    button {
-      cursor: pointer;
-      text-transform: uppercase;
-      font-weight: bold;
-      transition: 0.2s;
-    }
-
-    button:hover {
-      background-color: #002200;
-      box-shadow: 0 0 10px #00ff00;
-      text-shadow: 0 0 10px #00ff00;
-    }
-
-    #status {
-      margin-top: 20px;
-      font-weight: bold;
-      font-size: 18px;
-    }
-
-    .blinking-cursor::after {
-      content: "_";
-      animation: blink 1s step-end infinite;
+    .blinking {
+      animation: blink 1s infinite;
     }
 
     @keyframes blink {
@@ -82,136 +43,10 @@
   </style>
 </head>
 <body>
-  <h1 class="blinking-cursor">SECURE CONTACT TERMINAL</h1>
-
-  <input type="text" id="authCode" placeholder="ENTER AUTH CODE" maxlength="4" pattern="[0-9]{4}">
-
-  <select id="recipient">
-    <option value="">SELECT RECIPIENT</option>
-    <option value="vaf">VAF</option>
-    <option value="scp">SCP FOUNDATION</option>
-    <option value="gaming">GAMING UNIVERSE</option>
-    <option value="matesa">MATESAMAN9910</option>
-    <option value="vojta">111VOJTA</option>
-  </select>
-
-  <select id="urgency">
-    <option value="normal">URGENCY: NORMAL</option>
-    <option value="high">URGENCY: HIGH</option>
-    <option value="emergency">URGENCY: EMERGENCY</option>
-  </select>
-
-  <textarea id="message" rows="6" placeholder="TYPE YOUR MESSAGE HERE..."></textarea>
-
-  <button onclick="sendMessage()">SEND SECURE MESSAGE</button>
-
-  <p id="status"></p>
-
-  <script>
-    const authUsers = {
-      "9910": "matesaman9910",
-      "1111": "111Vojta",
-      "0000": "Guest"
-    };
-
-    const recipients = {
-      vaf: "https://discord.com/api/webhooks/1400523185689985107/J5JtDWJqquFBCz3lXIIleOrF3CgHMdZ-U0r6VPMbwnsfFPOd7Q3mXb48Zx-2j-D02FtK",
-      scp: "https://discord.com/api/webhooks/1400874303351689298/Fm5Bces63ph8FVqo6R4PkWTjdDC2gQFDrYN4RmOHOFlYf3cTdP7RDAmmlMucbJWK3pq1",
-      gaming: "https://discord.com/api/webhooks/1400874580331200562/ZZdWZIXWIFrqpihuYLAohlWbQxr9dSdAZ6cz7CN8uOzDyLF6jEVYfMnlk3G6-G0Hi7uf",
-      matesa: "https://discord.com/api/webhooks/1400874791023546418/2Droj_etQjuNTmoOQNZSJMB0Q02UY9xCJ9op__5f2MueGeqcYFesguATe2PgmK34_QUM",
-      vojta: "https://discord.com/api/webhooks/1400874901799178272/Gtp3kN4DI28Kk-Kdo2Oxw2I4fy7j9VZHX9G17fKv_6BMH4bFsgb1l43xzbY_pKgj1OXQ"
-    };
-
-    const recipientDisplayNames = {
-      vaf: "VAF",
-      scp: "SCP Foundation",
-      gaming: "GAMING UNIVERSE",
-      matesa: "matesaman9910",
-      vojta: "111Vojta"
-    };
-
-    const recipientMentions = {
-      vaf: "<@&1400876490987409408>",
-      scp: "<@&1400876625754853540>",
-      gaming: "<@&1400876712597917716>",
-      matesa: "<@&1400876815890780293>",
-      vojta: "<@&1400876888678731826>"
-    };
-
-    const urgencyCooldowns = {
-      normal: 30,       // seconds
-      high: 120,
-      emergency: 300
-    };
-
-    async function sendMessage() {
-      const auth = document.getElementById('authCode').value.trim();
-      const to = document.getElementById('recipient').value;
-      const urgency = document.getElementById('urgency').value;
-      const msg = document.getElementById('message').value.trim();
-      const status = document.getElementById('status');
-
-      if (!/^\d{4}$/.test(auth)) {
-        status.style.color = 'red';
-        status.textContent = "❌ AUTH CODE MUST BE 4 DIGITS";
-        return;
-      }
-
-      if (!(auth in authUsers)) {
-        status.style.color = 'red';
-        status.textContent = "❌ INVALID AUTH CODE";
-        return;
-      }
-
-      if (!to || !(to in recipients)) {
-        status.style.color = 'red';
-        status.textContent = "❌ INVALID OR MISSING RECIPIENT";
-        return;
-      }
-
-      if (!msg) {
-        status.style.color = 'red';
-        status.textContent = "❌ MESSAGE CANNOT BE EMPTY";
-        return;
-      }
-
-      // Check rate limit
-      const now = Date.now();
-      const cooldownKey = `lastSent_${auth}_${to}_${urgency}`;
-      const lastSent = localStorage.getItem(cooldownKey);
-      const cooldown = urgencyCooldowns[urgency] * 1000;
-
-      if (lastSent && now - parseInt(lastSent) < cooldown) {
-        const waitSec = Math.ceil((cooldown - (now - parseInt(lastSent))) / 1000);
-        status.style.color = 'red';
-        status.textContent = `⏳ Please wait ${waitSec}s before sending another ${urgency.toUpperCase()} message to this recipient.`;
-        return;
-      }
-
-      const sender = authUsers[auth];
-      const urgencyText = urgency.toUpperCase();
-      const displayName = recipientDisplayNames[to];
-      const mention = recipientMentions[to];
-
-      try {
-        await fetch(recipients[to], {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: "Secure Terminal",
-            content: `🔐 **New Secure Message**\n\n👤 **From:** ${sender} \`[${auth}]\`\n🎯 **To:** ${displayName} ${mention}\n🚨 **Urgency:** ${urgencyText}\n\n📩 **Message:**\n${msg}`
-          })
-        });
-
-        localStorage.setItem(cooldownKey, now.toString());
-        status.style.color = 'lime';
-        status.textContent = "✅ MESSAGE SENT SUCCESSFULLY";
-      } catch (e) {
-        status.style.color = 'red';
-        status.textContent = "❌ FAILED TO SEND MESSAGE";
-        console.error(e);
-      }
-    }
-  </script>
+  <h1 class="blinking">🔒 PROJECT LOCKED DOWN</h1>
+  <p>
+    Sorry, we are currently experiencing security problems and have been forced to lock down this project.<br><br>
+    Thank you for your understanding.
+  </p>
 </body>
 </html>
